@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -40,25 +41,28 @@ export default function BookDemoPage() {
         <div className="grid lg:grid-cols-2 gap-16 max-w-6xl mx-auto">
           {/* Left Column - Content */}
           <div className="space-y-8">
-            <div className="flex items-center">
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/design-mode-images/Group%2020%281%29-DjH8B6FkcLxBMbhG8KmCxgXSYGq8yl.png"
-                alt="Altarflow"
-                className="h-[45px]" // Updated logo height from 60px to 45px
-              />
-            </div>
+              <div className="flex items-center">
+                <Image
+                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/design-mode-images/Group%2020%281%29-DjH8B6FkcLxBMbhG8KmCxgXSYGq8yl.png"
+                  alt="Altarflow"
+                  width={180}
+                  height={45}
+                  className="h-[45px] w-auto"
+                  priority
+                />
+              </div>
 
             <div className="space-y-6">
-              <h1 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
-                We're looking forward to meeting you
-              </h1>
+                <h1 className="text-3xl lg:text-4xl font-bold text-foreground leading-tight">
+                  {"We're looking forward to meeting you"}
+                </h1>
 
               <div className="space-y-4">
                 <div className="flex items-start gap-4">
                   <CheckCircle className="w-6 h-6 text-blue-600 mt-1 flex-shrink-0" />
-                  <p className="text-muted-foreground text-lg">
-                    Answers to any questions you have about Altarflow's church management platform
-                  </p>
+                    <p className="text-muted-foreground text-lg">
+                      {"Answers to any questions you have about Altarflow's church management platform"}
+                    </p>
                 </div>
 
                 <div className="flex items-start gap-4">

@@ -7,6 +7,7 @@ import { Typewriter } from "@/components/ui/typewriter"
 import { BorderTrail } from "@/components/ui/border-trail"
 import { HandWrittenTitle } from "@/components/ui/hand-written-title"
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Footer } from "@/components/ui/footer"
 
 export default function HomePage() {
@@ -100,14 +101,17 @@ export default function HomePage() {
           isScrolled ? "bg-white backdrop-blur-md shadow-sm border-b border-gray-100" : "bg-white/90 backdrop-blur-md"
         }`}
       >
-        <div className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
-          <div className="flex items-center">
-            <img
-              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/design-mode-images/Group%2020%281%29-DjH8B6FkcLxBMbhG8KmCxgXSYGq8yl.png"
-              alt="Altarflow"
-              className="h-8"
-            />
-          </div>
+          <div className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
+            <div className="flex items-center">
+              <Image
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/design-mode-images/Group%2020%281%29-DjH8B6FkcLxBMbhG8KmCxgXSYGq8yl.png"
+                alt="Altarflow"
+                width={160}
+                height={32}
+                className="h-8 w-auto"
+                priority
+              />
+            </div>
 
           <nav className="hidden md:flex items-center space-x-8">
             <a href="#" className="text-gray-900 hover:text-black transition-colors font-medium">
@@ -211,10 +215,9 @@ export default function HomePage() {
             Your productivity hub, perfectly built to work just the way you do.
           </h1>
 
-          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed text-pretty">
-            Plan your day, organise your ideas, and collaborate with ease—all in one place. Altarflow helps you stay
-            focused and in control, no matter what you're working on.
-          </p>
+            <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed text-pretty">
+              {"Plan your day, organise your ideas, and collaborate with ease—all in one place. Altarflow helps you stay focused and in control, no matter what you're working on."}
+            </p>
 
           <div className="flex justify-center mb-16 max-w-md mx-auto">
             <div className="flex w-full shadow-sm rounded-full overflow-hidden border border-gray-200">
@@ -265,13 +268,16 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-black/10 pl-[24] pr-[24]"></div>
 
             <div className="relative z-10 w-full max-w-6xl mx-auto p-8">
-              <div className="w-[103%] mx-auto">
-                <img
-                  src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/design-mode-images/CleanShot%202025-09-15%20at%2022.01.04%402x%281%29-86uOvDOenwNr0EmKn6btsgYl7zbLQb.png"
-                  alt="Altarflow Dashboard - Comprehensive church management platform"
-                  className="w-full h-auto rounded-2xl shadow-2xl border border-white/20"
-                />
-              </div>
+                <div className="w-[103%] mx-auto">
+                  <Image
+                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/design-mode-images/CleanShot%202025-09-15%20at%2022.01.04%402x%281%29-86uOvDOenwNr0EmKn6btsgYl7zbLQb.png"
+                    alt="Altarflow Dashboard - Comprehensive church management platform"
+                    width={1920}
+                    height={1080}
+                    className="w-full h-auto rounded-2xl shadow-2xl border border-white/20"
+                    priority
+                  />
+                </div>
             </div>
           </div>
         </div>
@@ -502,9 +508,9 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-black mb-3">Collaborate without interruptions.</h3>
-                  <p className="text-gray-600 mb-4 leading-relaxed">
-                    Share updates, tag teammates, and move work forward — even when you're not online.
-                  </p>
+                    <p className="text-gray-600 mb-4 leading-relaxed">
+                      {"Share updates, tag teammates, and move work forward — even when you're not online."}
+                    </p>
                   <a href="#" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
                     Learn more
                     <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
