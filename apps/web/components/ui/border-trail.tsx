@@ -14,7 +14,7 @@ type BorderTrailProps = {
 }
 
 export function BorderTrail({ className, size = 60, transition, delay, onAnimationComplete, style }: BorderTrailProps) {
-  const BASE_TRANSITION = {
+  const BASE_TRANSITION: Transition = {
     repeat: Number.POSITIVE_INFINITY,
     duration: 4.5, // reduced duration from 5 to 4.5 seconds (10% faster)
     ease: "linear",
