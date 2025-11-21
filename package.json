@@ -9,6 +9,8 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "dev:web": "turbo dev --filter=@workspace/web",
+    "dev:studio": "turbo dev --filter=@workspace/studio",
     "lint": "turbo lint",
     "clean": "turbo clean"
   },
