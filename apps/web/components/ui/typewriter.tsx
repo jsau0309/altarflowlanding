@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { motion, type Variants } from "framer-motion"
 
 import { cn } from "@/lib/utils"
@@ -55,7 +55,7 @@ const Typewriter = ({
   const [isDeleting, setIsDeleting] = useState(false)
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
 
-  const texts = Array.isArray(text) ? text : [text]
+  const texts = useMemo(() => (Array.isArray(text) ? text : [text]), [text])
 
   useEffect(() => {
     let timeout: NodeJS.Timeout
@@ -99,7 +99,7 @@ const Typewriter = ({
     }
 
     return () => clearTimeout(timeout)
-  }, [currentIndex, displayText, isDeleting, speed, deleteSpeed, waitTime, texts, currentTextIndex, loop])
+  }, [currentIndex, displayText, isDeleting, speed, deleteSpeed, waitTime, texts, currentTextIndex, loop, initialDelay])
 
   return (
     <div className={`inline whitespace-pre-wrap tracking-tight ${className}`}>
