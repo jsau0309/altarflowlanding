@@ -35,7 +35,7 @@ export function Header() {
                 </div>
 
                 <nav className="hidden md:flex items-center space-x-8">
-                    <a href="#" className="text-gray-900 hover:text-black transition-colors font-medium">
+                    <a href="/" className="text-gray-900 hover:text-black transition-colors font-medium">
                         Home
                     </a>
                     <a href="#" className="text-gray-900 hover:text-black transition-colors font-medium">
@@ -46,6 +46,9 @@ export function Header() {
                     </a>
                     <a href="#" className="text-gray-900 hover:text-black transition-colors font-medium">
                         About
+                    </a>
+                    <a href="/blog" className="text-gray-900 hover:text-black transition-colors font-medium">
+                        Blog
                     </a>
                     <a href="#" className="text-gray-900 hover:text-black transition-colors font-medium">
                         Case studies
