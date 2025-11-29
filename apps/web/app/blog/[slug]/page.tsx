@@ -54,7 +54,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
       <main className="pt-24 pb-20">
         {/* Full-width Hero Image */}
         {heroImageUrl && (
-          <div className="w-full max-w-5xl mx-auto px-4 mb-8">
+          <div className="w-full max-w-[1184px] mx-auto px-4 lg:px-8 mb-8">
             <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg shadow-xl">
               <Image
                 src={heroImageUrl}
@@ -73,18 +73,76 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
           </div>
         )}
 
-        {/* Two-column layout */}
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex flex-col lg:flex-row lg:gap-16">
-            {/* Left Sidebar - Author Info */}
-            <aside className="lg:w-64 flex-shrink-0 mb-8 lg:mb-0">
-              <div className="lg:sticky lg:top-32">
+        {/* Mobile: Title and Excerpt after image */}
+        <div className="lg:hidden max-w-[1184px] mx-auto px-4 mb-10">
+          <h1 className="font-serif text-3xl md:text-4xl font-medium text-white leading-[1.1] tracking-tight">
+            {post.title}
+          </h1>
+          {post.excerpt && (
+            <p className="mt-4 text-lg text-white/70 leading-relaxed font-serif italic">
+              {post.excerpt}
+            </p>
+          )}
+        </div>
+
+        {/* Mobile: Author Info with dotted separator */}
+        {post.author && (
+          <div className="lg:hidden max-w-[1184px] mx-auto px-4 mb-8">
+            <div className="flex items-start gap-4">
+              {authorImageUrl && (
+                <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-white/20 flex-shrink-0">
+                  <Image
+                    src={authorImageUrl}
+                    alt={post.author.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
+              <div className="flex-1">
+                <p className="text-sm font-medium text-white/80">
+                  By {post.author.name}
+                </p>
+                {post.categories && post.categories.length > 0 && (
+                  <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mt-0.5">
+                    {post.categories[0].title}
+                  </p>
+                )}
+                {post.author.bio && (
+                  <div className="text-sm text-white/60 leading-relaxed mt-2">
+                    {typeof post.author.bio === 'string' ? (
+                      <p>{post.author.bio}</p>
+                    ) : (
+                      <PortableText value={post.author.bio as any} />
+                    )}
+                  </div>
+                )}
+                <time
+                  dateTime={post.publishedAt}
+                  className="mt-3 text-sm text-white/40 block"
+                >
+                  {format(new Date(post.publishedAt), "MMMM d, yyyy")}
+                </time>
+              </div>
+            </div>
+
+            {/* Dotted separator */}
+            <div className="border-t border-dotted border-white/30 mt-6" />
+          </div>
+        )}
+
+        {/* Three-column layout (224px | 736px | 224px) - Desktop */}
+        <div className="max-w-[1184px] mx-auto px-4 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 lg:gap-0">
+            {/* Left Sidebar - Author Info (col-span-2 = 224px) - Hidden on mobile */}
+            <aside className="hidden lg:block lg:col-span-2">
+              <div className="lg:sticky lg:top-32 lg:pr-6">
                 {post.author && (
                   <div className="flex flex-col">
                     {/* Author Avatar and Name */}
                     <div className="flex items-center gap-3 mb-3">
                       {authorImageUrl && (
-                        <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-white/20">
+                        <div className="relative w-10 h-10 rounded-full overflow-hidden ring-2 ring-white/20">
                           <Image
                             src={authorImageUrl}
                             alt={post.author.name}
@@ -94,7 +152,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         </div>
                       )}
                       <div>
-                        <p className="text-sm font-medium text-white/70 uppercase tracking-wide">
+                        <p className="text-xs font-medium text-white/70 uppercase tracking-wide">
                           By {post.author.name}
                         </p>
                         {post.categories && post.categories.length > 0 && (
@@ -128,10 +186,10 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               </div>
             </aside>
 
-            {/* Right Content */}
-            <article className="flex-1 min-w-0">
-              {/* Title */}
-              <header className="mb-10">
+            {/* Center Content (col-span-8 = 736px) */}
+            <article className="lg:col-span-8 min-w-0">
+              {/* Title - Desktop only */}
+              <header className="hidden lg:block mb-10">
                 <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.5rem] font-medium text-white leading-[1.1] tracking-tight">
                   {post.title}
                 </h1>
@@ -141,6 +199,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                     {post.excerpt}
                   </p>
                 )}
+
+                {/* Dotted separator */}
+                <div className="border-t border-dotted border-white/30 mt-8" />
               </header>
 
               {/* Content */}
@@ -191,6 +252,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 </Link>
               </div>
             </article>
+
+            {/* Right Margin (col-span-2 = 224px) */}
+            <div className="hidden lg:block lg:col-span-2" aria-hidden="true" />
           </div>
         </div>
       </main>

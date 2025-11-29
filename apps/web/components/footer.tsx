@@ -9,8 +9,8 @@ export function Footer() {
   const [theme, setTheme] = useState<"light" | "dark" | "system">("dark")
 
   return (
-    <footer className="bg-[#1c1c1c] py-8 lg:py-12">
-      <div className="mx-auto max-w-[92%] lg:max-w-[85%]">
+    <footer className="bg-[#1c1c1c] py-8 lg:py-12 px-4 lg:px-6">
+      <div className="mx-auto max-w-7xl">
         <div className="relative overflow-hidden rounded-2xl shadow-xl">
           <Image src="/images/landing/footer-bg.png" alt="" fill className="object-cover" priority />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/30" />
