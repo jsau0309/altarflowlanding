@@ -1,17 +1,30 @@
-import { getBlogPostBySlug, getAllBlogPosts, urlFor } from '@/lib/sanity'
-import { PortableText } from '@portabletext/react'
-import Image from 'next/image'
-import Link from 'next/link'
-import { format } from 'date-fns'
-import { notFound } from 'next/navigation'
-import type { Metadata } from 'next'
-
-export const revalidate = 60 // Revalidate every 60 seconds
+import { notFound } from "next/navigation"
+import Image from "next/image"
+import Link from "next/link"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
+import { getBlogPostBySlug, getAllBlogPosts, urlForImage } from "@/lib/sanity"
+import { format } from "date-fns"
+import type { Metadata } from "next"
+import { PortableText } from "@portabletext/react"
 
 interface BlogPostPageProps {
-  params: Promise<{
-    slug: string
-  }>
+  params: { slug: string }
+}
+
+export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+  const post = await getBlogPostBySlug(params.slug)
+
+  if (!post) {
+    return {
+      title: "Post Not Found - Altarflow",
+    }
+  }
+
+  return {
+    title: `${post.title} - Altarflow Blog`,
+    description: post.excerpt,
+  }
 }
 
 export async function generateStaticParams() {
@@ -21,157 +34,168 @@ export async function generateStaticParams() {
   }))
 }
 
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
-  const { slug } = await params
-  const post = await getBlogPostBySlug(slug)
-
-  if (!post) {
-    return {
-      title: 'Post Not Found',
-    }
-  }
-
-  return {
-    title: post.title,
-    description: post.metaDescription || post.excerpt,
-    keywords: post.metaKeywords,
-    openGraph: {
-      title: post.title,
-      description: post.metaDescription || post.excerpt,
-      images: post.featuredImage
-        ? [urlFor(post.featuredImage).width(1200).height(630).url()]
-        : [],
-    },
-  }
-}
-
-const portableTextComponents = {
-  types: {
-    image: ({ value }: any) => {
-      return (
-        <div className="my-8 relative aspect-video">
-          <Image
-            src={urlFor(value).width(1200).url()}
-            alt={value.alt || 'Blog post image'}
-            fill
-            className="object-cover rounded-lg"
-          />
-        </div>
-      )
-    },
-  },
-  block: {
-    h1: ({ children }: any) => <h1 className="text-4xl font-bold mt-8 mb-4">{children}</h1>,
-    h2: ({ children }: any) => <h2 className="text-3xl font-bold mt-8 mb-4">{children}</h2>,
-    h3: ({ children }: any) => <h3 className="text-2xl font-bold mt-6 mb-3">{children}</h3>,
-    h4: ({ children }: any) => <h4 className="text-xl font-bold mt-6 mb-3">{children}</h4>,
-    normal: ({ children }: any) => <p className="mb-4 leading-7">{children}</p>,
-    blockquote: ({ children }: any) => (
-      <blockquote className="border-l-4 border-primary pl-4 italic my-6">{children}</blockquote>
-    ),
-  },
-  marks: {
-    link: ({ children, value }: any) => {
-      const rel = !value.href.startsWith('/') ? 'noreferrer noopener' : undefined
-      return (
-        <a href={value.href} rel={rel} className="text-primary hover:underline">
-          {children}
-        </a>
-      )
-    },
-  },
-  list: {
-    bullet: ({ children }: any) => <ul className="list-disc list-inside mb-4 space-y-2">{children}</ul>,
-    number: ({ children }: any) => <ol className="list-decimal list-inside mb-4 space-y-2">{children}</ol>,
-  },
-}
+// Revalidate content every 60 seconds
+export const revalidate = 60
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
-  const { slug } = await params
-  const post = await getBlogPostBySlug(slug)
+  const post = await getBlogPostBySlug(params.slug)
 
   if (!post) {
     notFound()
   }
 
+  const heroImageUrl = urlForImage(post.featuredImage)
+  const authorImageUrl = post.author?.image ? urlForImage(post.author.image) : null
+
   return (
-    <div className="min-h-screen bg-background">
-      <article className="container mx-auto px-4 py-16">
-        <div className="max-w-3xl mx-auto">
-          <Link
-            href="/blog"
-            className="inline-flex items-center text-sm text-muted-foreground hover:text-foreground mb-8"
-          >
-            ← Back to Blog
-          </Link>
+    <div className="min-h-screen bg-[#1c1c1c]">
+      <Header />
 
-          {post.categories && post.categories.length > 0 && (
-            <div className="mb-4 flex flex-wrap gap-2">
-              {post.categories.map((category) => (
-                <span
-                  key={category.slug.current}
-                  className="text-sm font-medium text-primary"
-                >
-                  {category.title}
-                </span>
-              ))}
-            </div>
-          )}
-
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">{post.title}</h1>
-
-          <div className="flex items-center gap-4 text-sm text-muted-foreground mb-8">
-            {post.author.image && (
-              <div className="relative w-10 h-10 rounded-full overflow-hidden">
-                <Image
-                  src={urlFor(post.author.image).width(80).height(80).url()}
-                  alt={post.author.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
-            <div>
-              <div className="font-medium text-foreground">{post.author.name}</div>
-              <time dateTime={post.publishedAt}>
-                {format(new Date(post.publishedAt), 'MMMM d, yyyy')}
-              </time>
-            </div>
-          </div>
-
-          {post.featuredImage && (
-            <div className="relative aspect-video mb-8 rounded-lg overflow-hidden">
+      <main className="pt-24 pb-20">
+        {/* Full-width Hero Image */}
+        {heroImageUrl && (
+          <div className="w-full max-w-5xl mx-auto px-4 mb-8">
+            <div className="relative w-full aspect-[16/9] overflow-hidden rounded-lg shadow-xl">
               <Image
-                src={urlFor(post.featuredImage).width(1200).height(675).url()}
-                alt={post.featuredImage.alt || post.title}
+                src={heroImageUrl}
+                alt={post.featuredImage?.alt || post.title}
                 fill
                 className="object-cover"
                 priority
               />
             </div>
-          )}
-
-          <div className="prose prose-lg dark:prose-invert max-w-none">
-            <PortableText value={post.content} components={portableTextComponents} />
+            {/* Image Caption */}
+            {post.featuredImage?.alt && (
+              <p className="mt-3 text-sm text-white/50 text-center italic">
+                {post.featuredImage.alt}
+              </p>
+            )}
           </div>
+        )}
 
-          {post.tags && post.tags.length > 0 && (
-            <div className="mt-12 pt-8 border-t">
-              <h3 className="text-sm font-semibold mb-3">Tags</h3>
-              <div className="flex flex-wrap gap-2">
-                {post.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 text-sm bg-secondary rounded-full"
-                  >
-                    {tag}
-                  </span>
-                ))}
+        {/* Two-column layout */}
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="flex flex-col lg:flex-row lg:gap-16">
+            {/* Left Sidebar - Author Info */}
+            <aside className="lg:w-64 flex-shrink-0 mb-8 lg:mb-0">
+              <div className="lg:sticky lg:top-32">
+                {post.author && (
+                  <div className="flex flex-col">
+                    {/* Author Avatar and Name */}
+                    <div className="flex items-center gap-3 mb-3">
+                      {authorImageUrl && (
+                        <div className="relative w-12 h-12 rounded-full overflow-hidden ring-2 ring-white/20">
+                          <Image
+                            src={authorImageUrl}
+                            alt={post.author.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      )}
+                      <div>
+                        <p className="text-sm font-medium text-white/70 uppercase tracking-wide">
+                          By {post.author.name}
+                        </p>
+                        {post.categories && post.categories.length > 0 && (
+                          <p className="text-xs font-semibold text-white/50 uppercase tracking-wider">
+                            {post.categories[0].title}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Author Bio */}
+                    {post.author.bio && (
+                      <div className="text-sm text-white/60 leading-relaxed mt-2 prose prose-sm prose-invert">
+                        {typeof post.author.bio === 'string' ? (
+                          <p>{post.author.bio}</p>
+                        ) : (
+                          <PortableText value={post.author.bio as any} />
+                        )}
+                      </div>
+                    )}
+
+                    {/* Date */}
+                    <time
+                      dateTime={post.publishedAt}
+                      className="mt-4 text-sm text-white/40 block"
+                    >
+                      {format(new Date(post.publishedAt), "MMMM d, yyyy")}
+                    </time>
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            </aside>
+
+            {/* Right Content */}
+            <article className="flex-1 min-w-0">
+              {/* Title */}
+              <header className="mb-10">
+                <h1 className="font-serif text-4xl md:text-5xl lg:text-[3.5rem] font-medium text-white leading-[1.1] tracking-tight">
+                  {post.title}
+                </h1>
+
+                {post.excerpt && (
+                  <p className="mt-6 text-xl text-white/70 leading-relaxed font-serif italic">
+                    {post.excerpt}
+                  </p>
+                )}
+              </header>
+
+              {/* Content */}
+              <div className="prose prose-lg prose-invert max-w-none
+                prose-headings:font-serif prose-headings:font-semibold prose-headings:text-white prose-headings:tracking-tight
+                prose-h2:text-3xl prose-h2:mt-12 prose-h2:mb-6
+                prose-h3:text-2xl prose-h3:mt-10 prose-h3:mb-4
+                prose-p:text-white/80 prose-p:leading-[1.8] prose-p:mb-6 prose-p:font-serif prose-p:text-[1.125rem]
+                prose-strong:text-white prose-strong:font-semibold
+                prose-a:text-[#5B9BD5] prose-a:underline prose-a:underline-offset-2 prose-a:decoration-[#5B9BD5]/30 hover:prose-a:decoration-[#5B9BD5]
+                prose-li:text-white/80 prose-li:leading-[1.8] prose-li:font-serif prose-li:text-[1.125rem]
+                prose-blockquote:border-l-4 prose-blockquote:border-white/30 prose-blockquote:pl-6 prose-blockquote:italic prose-blockquote:text-white/60 prose-blockquote:font-serif
+                prose-img:rounded-lg prose-img:shadow-md
+              ">
+                {post.content ? (
+                  <PortableText value={post.content as any} />
+                ) : (
+                  <p className="text-white/50">No content available.</p>
+                )}
+              </div>
+
+              {/* Tags */}
+              {post.tags && post.tags.length > 0 && (
+                <div className="mt-16 pt-8 border-t border-white/10">
+                  <div className="flex flex-wrap gap-2">
+                    {post.tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-4 py-2 text-sm font-medium text-white/70 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Back to Blog */}
+              <div className="mt-12">
+                <Link
+                  href="/blog"
+                  className="inline-flex items-center gap-2 text-white/50 hover:text-white transition-colors font-medium"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Back to all articles
+                </Link>
+              </div>
+            </article>
+          </div>
         </div>
-      </article>
+      </main>
+
+      <Footer />
     </div>
   )
 }

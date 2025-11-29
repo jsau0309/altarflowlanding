@@ -1,19 +1,25 @@
-import { Header } from "@/components/layout/header"
-import { Hero } from "@/components/home/hero"
-import { Features } from "@/components/home/features"
-import { UseCases } from "@/components/home/use-cases"
-import { CTA } from "@/components/home/cta"
-import { SiteFooter } from "@/components/layout/site-footer"
+import { Header } from "@/components/header"
+import { Hero } from "@/components/hero"
+import { Features } from "@/components/features"
+import { CaseStudies } from "@/components/case-studies"
+import { BlogSection } from "@/components/blog-section"
+import { CTA } from "@/components/cta"
+import { Footer } from "@/components/footer"
+import { QASection } from "@/components/qa-section"
 
-export default function HomePage() {
+export default function Home() {
   return (
-    <div className="min-h-screen bg-white">
+    <>
       <Header />
-      <Hero />
-      <Features />
-      <UseCases />
-      <CTA />
-      <SiteFooter />
-    </div>
+      <main>
+        <Hero />
+        <Features />
+        <CaseStudies />
+        <BlogSection />
+        <CTA />
+        <QASection />
+      </main>
+      <Footer />
+    </>
   )
 }

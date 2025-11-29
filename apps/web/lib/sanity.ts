@@ -1,62 +1,126 @@
-import { createClient } from '@sanity/client'
-import imageUrlBuilder from '@sanity/image-url'
-import type { SanityImageSource } from '@sanity/image-url/lib/types/types'
+import { createClient } from "@sanity/client"
 
 export const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID!,
-  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  apiVersion: '2024-01-01',
-  useCdn: process.env.NODE_ENV === 'production',
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "production",
+  apiVersion: "2024-01-01",
+  // Use CDN for production, but disable for fresher content during development
+  useCdn: process.env.NODE_ENV === "production",
 })
 
-const builder = imageUrlBuilder(client)
+// Helper function to build Sanity image URLs
+export function urlForImage(image: SanityImage | undefined): string | null {
+  if (!image?.asset?._ref) return null
 
-export function urlFor(source: SanityImageSource) {
-  return builder.image(source)
+  // Parse the asset reference to build the URL
+  // Format: image-{id}-{dimensions}-{format}
+  const ref = image.asset._ref
+  const [, id, dimensions, format] = ref.split("-")
+
+  const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID
+  const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production"
+
+  return `https://cdn.sanity.io/images/${projectId}/${dataset}/${id}-${dimensions}.${format}`
+}
+
+// Types
+export interface SanityImage {
+  _type: "image"
+  asset: {
+    _ref: string
+    _type: "reference"
+  }
+  alt?: string
+}
+
+export interface Author {
+  _id: string
+  name: string
+  image?: SanityImage
+  bio?: string
+}
+
+export interface Category {
+  _id: string
+  title: string
+  slug: { current: string }
 }
 
 export interface BlogPost {
   _id: string
-  _createdAt: string
   title: string
-  slug: {
-    current: string
-  }
-  author: {
-    name: string
-    image?: any
-    bio?: any[]
-  }
-  featuredImage: any
+  slug: { current: string }
+  author: Author
+  featuredImage?: SanityImage
   excerpt: string
-  content: any[]
-  categories?: Array<{
-    title: string
-    slug: {
-      current: string
-    }
-  }>
-  tags?: string[]
+  content?: unknown[] // Portable Text blocks
   publishedAt: string
+  categories?: Category[]
+  tags?: string[]
   metaDescription?: string
   metaKeywords?: string[]
+}
+
+// Queries
+export async function getLatestBlogPosts(limit = 3): Promise<BlogPost[]> {
+  const query = `*[_type == "blog"] | order(publishedAt desc)[0...${limit}] {
+    _id,
+    title,
+    slug,
+    excerpt,
+    publishedAt,
+    featuredImage {
+      ...,
+      alt
+    },
+    author-> {
+      _id,
+      name,
+      image
+    },
+    categories[]-> {
+      _id,
+      title,
+      slug
+    },
+    tags
+  }`
+
+  return client.fetch(query)
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
   const query = `*[_type == "blog"] | order(publishedAt desc) {
     _id,
-    _createdAt,
     title,
     slug,
-    "author": author->{name, image, bio},
-    featuredImage,
     excerpt,
-    content,
-    "categories": categories[]->{ title, slug },
-    tags,
     publishedAt,
-    metaDescription,
-    metaKeywords
+    featuredImage {
+      ...,
+      alt
+    },
+    author-> {
+      _id,
+      name,
+      image
+    },
+    categories[]-> {
+      _id,
+      title,
+      slug
+    },
+    tags
+  }`
+
+  return client.fetch(query)
+}
+
+export async function getAllCategories(): Promise<Category[]> {
+  const query = `*[_type == "category"] | order(title asc) {
+    _id,
+    title,
+    slug
   }`
 
   return client.fetch(query)
@@ -65,39 +129,30 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
   const query = `*[_type == "blog" && slug.current == $slug][0] {
     _id,
-    _createdAt,
     title,
     slug,
-    "author": author->{name, image, bio},
-    featuredImage,
     excerpt,
     content,
-    "categories": categories[]->{ title, slug },
-    tags,
     publishedAt,
+    featuredImage {
+      ...,
+      alt
+    },
+    author-> {
+      _id,
+      name,
+      image,
+      bio
+    },
+    categories[]-> {
+      _id,
+      title,
+      slug
+    },
+    tags,
     metaDescription,
     metaKeywords
   }`
 
   return client.fetch(query, { slug })
-}
-
-export async function getBlogPostsByCategory(categorySlug: string): Promise<BlogPost[]> {
-  const query = `*[_type == "blog" && references(*[_type == "category" && slug.current == $categorySlug]._id)] | order(publishedAt desc) {
-    _id,
-    _createdAt,
-    title,
-    slug,
-    "author": author->{name, image, bio},
-    featuredImage,
-    excerpt,
-    content,
-    "categories": categories[]->{ title, slug },
-    tags,
-    publishedAt,
-    metaDescription,
-    metaKeywords
-  }`
-
-  return client.fetch(query, { categorySlug })
 }
