@@ -17,7 +17,7 @@ export async function BlogSection() {
               Insights and stories to help your ministry thrive.
             </p>
           </div>
-          <div className="mx-auto max-w-4xl text-center">
+          <div className="text-center">
             <p className="text-white/60">No blog posts yet. Check back soon!</p>
           </div>
         </div>
@@ -37,7 +37,7 @@ export async function BlogSection() {
         </div>
 
         {/* Blog Cards */}
-        <div className="mx-auto flex max-w-4xl flex-col space-y-8">
+        <div className="flex flex-col space-y-8">
           {posts.map((post) => (
             <Link
               key={post._id}
