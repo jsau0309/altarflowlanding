@@ -86,7 +86,7 @@ export async function getLatestBlogPosts(limit = 3): Promise<BlogPost[]> {
     tags
   }`
 
-  return client.fetch(query)
+  return client.fetch(query, {}, { next: { revalidate: 60 } })
 }
 
 export async function getAllBlogPosts(): Promise<BlogPost[]> {
@@ -113,7 +113,7 @@ export async function getAllBlogPosts(): Promise<BlogPost[]> {
     tags
   }`
 
-  return client.fetch(query)
+  return client.fetch(query, {}, { next: { revalidate: 60 } })
 }
 
 export async function getAllCategories(): Promise<Category[]> {
@@ -123,7 +123,7 @@ export async function getAllCategories(): Promise<Category[]> {
     slug
   }`
 
-  return client.fetch(query)
+  return client.fetch(query, {}, { next: { revalidate: 60 } })
 }
 
 export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> {
@@ -154,5 +154,5 @@ export async function getBlogPostBySlug(slug: string): Promise<BlogPost | null> 
     metaKeywords
   }`
 
-  return client.fetch(query, { slug })
+  return client.fetch(query, { slug }, { next: { revalidate: 60 } })
 }

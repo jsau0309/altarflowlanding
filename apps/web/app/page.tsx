@@ -7,6 +7,9 @@ import { CTA } from "@/components/cta"
 import { Footer } from "@/components/footer"
 import { QASection } from "@/components/qa-section"
 
+// Revalidate content every 60 seconds to pick up Sanity CMS changes
+export const revalidate = 60
+
 export default function Home() {
   return (
     <>
